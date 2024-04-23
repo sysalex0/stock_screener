@@ -6,12 +6,11 @@ from mark_minervini_stock_screener import MarkMinerviniStockScreener
 execution_date = datetime.datetime.now()
 
 stocks_df = get_all_stocks()
-valid_ticker_stocks_df = stocks_df[stocks_df['symbol'].str.match('[A-Z]+')]
-screener = MarkMinerviniStockScreener(date=execution_date, stocks_df=stocks_df.head(1))
-# screener = MarkMinerviniStockScreener(date=execution_date, stocks_df=stocks_df)
+valid_ticker_stocks_df = stocks_df[stocks_df['symbol'].str.fullmatch('[A-Z]+')]
+# screener = MarkMinerviniStockScreener(date=execution_date, stocks_df=stocks_df.head(1))
+screener = MarkMinerviniStockScreener(date=execution_date, stocks_df=stocks_df)
 pre_screened_stocks_df = screener._applied_criteria_stocks_df
 screened_stocks_df = screener.screen()
-
 
 pre_screened_filename = 'pre_screened_stocks_for_{}_at_{}.csv'.format(
     execution_date.strftime('%Y%m%d'),
