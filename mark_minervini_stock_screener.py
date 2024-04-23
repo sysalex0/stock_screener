@@ -3,9 +3,12 @@ import pandas as pd
 from client.yfinnace_data_client import get_stock_historical_price_data
 from indicator.moving_average import MovingAverage
 from indicator.relative_strength import RelativeStrength
+from indicator.trend import Trend
 
 
 class MarkMinerviniStockScreener:
+    trend_check_months = list(range(1, 5))
+
     def __init__(self, date, stocks_df):
         self.date = date
         self.stocks_df = stocks_df
@@ -33,6 +36,7 @@ class MarkMinerviniStockScreener:
     def gather_price_data(self, stock_ticker):
         historical_price_data_df = get_stock_historical_price_data(date=self.date, stock_ticker=stock_ticker)
         ma = MovingAverage(historical_price_data_df)
+        sma_200_trend_up_for_months = self._calculate_sma_trend_up_for_months(ma=ma, sma_day=200)
         rs = RelativeStrength(historical_price_data_df)
 
         stock_price_data_dict = {
@@ -42,6 +46,7 @@ class MarkMinerviniStockScreener:
             'sma_150': ma.sma_150,
             'sma_200': ma.sma_200,
             'sma_200_20_days_before': ma.get_sma_in_the_past(200, 20),
+            'sma_200_is_up_for_months': any(sma_200_trend_up_for_months),
             'low_of_52_weeks': round(historical_price_data_df["adjusted_close"][-260:].min(), 2),
             'high_of_52_weeks': round(historical_price_data_df["adjusted_close"][-260:].max(), 2),
             'rs_rating': RelativeStrength.calculate_rs_rating(rs.relative_strength, self._index_relative_strength)
@@ -59,8 +64,8 @@ class MarkMinerviniStockScreener:
 
     def is_pass_condition_3(self, stock_price_data):
         # Condition 3: 200 SMA trending up for at least 1 month (ideally 4-5 months)
-        # TODO add logic
-        return stock_price_data['sma_200'] > stock_price_data['sma_200_20_days_before']
+        # return stock_price_data['sma_200'] > stock_price_data['sma_200_20_days_before']
+        return stock_price_data['sma_200_is_up_for_months']
 
     def is_pass_condition_4(self, stock_price_data):
         # Condition 4: 50 SMA> 150 SMA and 50 SMA> 200 SMA
@@ -111,3 +116,13 @@ class MarkMinerviniStockScreener:
         index_price_data = get_stock_historical_price_data(date=self.date, stock_ticker='VOO')
         index_rs = RelativeStrength(index_price_data)
         return index_rs.calculate_relative_strength()
+
+    def _calculate_sma_trend_up_for_months(self, ma, sma_day):
+        sma_day_df = ma.get_sma_df(sma_day)
+        trend = Trend(sma_day_df)
+
+        sma_is_up_for_months = []
+        for month in self.trend_check_months:
+            trend_is_up = trend.is_up(days=month*20)
+            sma_is_up_for_months.append(trend_is_up)
+        return sma_is_up_for_months

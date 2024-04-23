@@ -1,5 +1,7 @@
 import pandas as pd
 
+from indicator.trend import Trend
+
 
 class MovingAverage:
     ma_values = [50, 150, 200]
@@ -23,3 +25,6 @@ class MovingAverage:
         except Exception:
             sma_x_on_n_days_before = 0
         return sma_x_on_n_days_before
+
+    def get_sma_df(self, sma_day):
+        return self._sma_df[str(sma_day)]
