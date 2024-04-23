@@ -8,6 +8,7 @@ from indicator.trend import Trend
 
 class MarkMinerviniStockScreener:
     trend_check_months = list(range(1, 5))
+    screener_name = 'mark_minervini'
 
     def __init__(self, date, stocks_df):
         self.date = date
@@ -17,6 +18,9 @@ class MarkMinerviniStockScreener:
 
     def screen(self):
         return self._applied_criteria_stocks_df[self._applied_criteria_stocks_df['is_pass_all_conditions']]
+
+    def get_screener_name(self):
+        return self.screener_name
 
     def _get_applied_criteria_stocks_df(self):
         stock_tickers = self.stocks_df['symbol'].tolist()
