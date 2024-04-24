@@ -49,7 +49,6 @@ class MarkMinerviniStockScreener:
             'sma_50': ma.sma_50,
             'sma_150': ma.sma_150,
             'sma_200': ma.sma_200,
-            'sma_200_20_days_before': ma.get_sma_in_the_past(200, 20),
             'sma_200_is_up_for_months': any(sma_200_trend_up_for_months),
             'low_of_52_weeks': round(historical_price_data_df["adjusted_close"][-260:].min(), 2),
             'high_of_52_weeks': round(historical_price_data_df["adjusted_close"][-260:].max(), 2),
@@ -68,7 +67,6 @@ class MarkMinerviniStockScreener:
 
     def is_pass_condition_3(self, stock_price_data):
         # Condition 3: 200 SMA trending up for at least 1 month (ideally 4-5 months)
-        # return stock_price_data['sma_200'] > stock_price_data['sma_200_20_days_before']
         return stock_price_data['sma_200_is_up_for_months']
 
     def is_pass_condition_4(self, stock_price_data):
