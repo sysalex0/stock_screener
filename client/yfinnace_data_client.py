@@ -1,7 +1,7 @@
 import yfinance as yf
 from pandas_datareader import data as pdr
 
-from utils import get_period
+from utils.datetime_utils import get_period
 
 yf.pdr_override()
 
