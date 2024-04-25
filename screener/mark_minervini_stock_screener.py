@@ -49,7 +49,7 @@ class MarkMinerviniStockScreener:
             'sma_50': ma.sma_50,
             'sma_150': ma.sma_150,
             'sma_200': ma.sma_200,
-            'sma_200_is_up_for_months': any(sma_200_trend_up_for_months),
+            'sma_200_is_up_for_months': sma_200_trend_up_for_months[-1],
             'low_of_52_weeks': round(historical_price_data_df["adjusted_close"][-260:].min(), 2),
             'high_of_52_weeks': round(historical_price_data_df["adjusted_close"][-260:].max(), 2),
             'rs_rating': RelativeStrength.calculate_rs_rating(rs.relative_strength, self._index_relative_strength)

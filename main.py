@@ -1,5 +1,4 @@
 import datetime
-from pathlib import Path
 
 from client.nasdap_data_client import get_all_stocks
 from screener.mark_minervini_stock_screener import MarkMinerviniStockScreener
