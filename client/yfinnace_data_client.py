@@ -15,3 +15,8 @@ def get_stock_historical_price_data(date, stock_ticker, days=365):
     if len(df) < 2:
         raise Exception(f'[{stock_ticker}] does not have enough historical price data')
     return df
+
+
+def get_stock_ticker(stock_ticker):
+    ticker = yf.Ticker(stock_ticker)
+    return ticker
