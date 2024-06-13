@@ -4,7 +4,7 @@ from client.yfinnace_data_client import get_stock_historical_price_data, get_sto
 from indicator.moving_average import MovingAverage
 from indicator.relative_strength import RelativeStrength
 from indicator.trend import Trend
-from service.yfinance_service import get_industry_sector
+from service.yfinance_service import get_sector, get_industry
 
 
 class MarkMinerviniStockScreener:
@@ -18,8 +18,15 @@ class MarkMinerviniStockScreener:
         self._applied_criteria_stocks_df = self._get_applied_criteria_stocks_df()
 
     def screen(self):
-        screened_df = self._applied_criteria_stocks_df[self._applied_criteria_stocks_df['is_pass_all_conditions']][['stock_ticker']]
-        screened_df['industry'] = screened_df['stock_ticker'].map(lambda row: self._derive_industry(row))
+        screened_df = self._applied_criteria_stocks_df[self._applied_criteria_stocks_df['is_pass_all_conditions']][
+            ['stock_ticker']]
+
+        screened_df['ticker_info'] = screened_df['stock_ticker'].map(lambda ticker: get_stock_ticker(ticker).info)
+
+        screened_df['industry'] = screened_df['ticker_info'].map(lambda ticker_info: ticker_info.get('industry', 'NA'))
+        screened_df['sector'] = screened_df['ticker_info'].map(lambda ticker_info: ticker_info.get('sector', 'NA'))
+
+        screened_df.drop(['ticker_info'], axis=1, inplace=True)
         return screened_df
 
     def get_screener_name(self):
@@ -131,8 +138,3 @@ class MarkMinerviniStockScreener:
             trend_is_up = trend.is_up(days=month * 20)
             sma_is_up_for_months.append(trend_is_up)
         return sma_is_up_for_months
-
-    def _derive_industry(self, stock_ticker):
-        yf_ticker = get_stock_ticker(stock_ticker)
-        industry = get_industry_sector(yf_ticker)
-        return industry
